@@ -1,12 +1,15 @@
-package br.com.alura.forum.controller;
+package br.com.alura.forum.controller.form;
 
+import br.com.alura.forum.controller.AtualizacaoTopicoForm;
+import br.com.alura.forum.controller.dto.DetalhesDoTopicoDTO;
+import br.com.alura.forum.controller.dto.TopicoDTO;
 import br.com.alura.forum.modelo.Topico;
 import br.com.alura.forum.repository.CursoRepository;
 import br.com.alura.forum.repository.TopicoRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -40,6 +43,21 @@ public class TopicosController {
 
         URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
         return ResponseEntity.created(uri).body(new TopicoDTO(topico)) ;
+    }
+
+    @GetMapping("/{id}")
+    @Deprecated
+    public DetalhesDoTopicoDTO detalhar(@PathVariable Long id) {
+        Topico topico = topicoRepository.getOne(id);
+        return new DetalhesDoTopicoDTO(topico);
+    }
+
+    @PutMapping("/{id}")
+    @Deprecated
+    @Transactional
+    public ResponseEntity<TopicoDTO> atualizar (@PathVariable Long id, @RequestBody @Valid AtualizacaoTopicoForm form){
+        Topico topico = form.atualizar(id, topicoRepository);
+        return ResponseEntity.ok(new TopicoDTO(topico));
     }
 
 }
